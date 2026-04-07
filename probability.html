@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבוא להסתברות - מושגי יסוד</title>
+    <!-- ייבוא פונט 'Heebo' המתאים מאוד לעברית מודרנית ונקייה -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- ייבוא FontAwesome לאייקונים -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ==========================================
+           1. הגדרות בסיסיות (THE SETUP)
+           ========================================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f1f5f9; /* רקע עדין ובהיר מחוץ לשקפים */
+            display: grid;
+            gap: 30px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            min-height: 100vh;
+            padding: 30px 0;
+            place-items: center;
+            font-family: 'Heebo', sans-serif;
+            direction: rtl; /* תמיכה בעברית */
+        }
+
+        /* עיצוב מיכל השקף */
+        .slide-container {
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+            display: flex;
+            flex-direction: column;
+            height: 720px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px 80px;
+            position: relative;
+            width: 1280px;
+            color: #334155;
+        }
+
+        /* עיצוב רקע אבסטרקטי לשקפים (Gradient Blobs) */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -150px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, rgba(37, 99, 235, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .slide-container::after {
+            content: '';
+            position: absolute;
+            bottom: -150px;
+            left: -150px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 1; /* תוכן מעל עיטורי הרקע */
+            width: 100%;
+        }
+
+        /* ==========================================
+           2. טיפוגרפיה (TYPOGRAPHY)
+           ========================================== */
+        h1, h2, h3, h4 {
+            color: #0f172a;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        p, li {
+            font-size: 22px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 85px;
+            font-weight: 900;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 32px;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .slide-title {
+            font-size: 46px;
+            margin-bottom: 40px;
+            text-align: right;
+            color: #1e40af;
+            border-bottom: 4px solid #f59e0b;
+            padding-bottom: 10px;
+            display: inline-block;
+            width: max-content;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        /* ==========================================
+           3. נוסחאות (MATHML STYLING)
+           ========================================== */
+        .math-inline {
+            display: inline-flex;
+            direction: ltr; /* נוסחאות תמיד משמאל לימין */
+            font-size: 24px;
+            color: #1d4ed8;
+            vertical-align: baseline;
+        }
+
+        .math-block {
+            display: flex;
+            direction: ltr; /* משמאל לימין */
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            margin: 25px 0;
+            color: #1e3a8a;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        math {
+            display: math;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        /* ==========================================
+           4. תבניות פריסה (LAYOUTS)
+           ========================================== */
+        
+        /* Layout: Title Slide */
+        .title-layout {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        /* Layout: Two Columns */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .image-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            height: 420px;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .two-column .image-wrapper img {
+            object-fit: contain;
+            background-color: #f8fafc;
+        }
+
+        /* Layout: Rounded Image */
+        .rounded-image-layout .image-wrapper {
+            border-radius: 50%;
+            height: 380px;
+            width: 380px;
+            margin: 0 auto;
+            border: 8px solid #eff6ff;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .rounded-image-layout .image-wrapper img {
+            object-fit: cover;
+        }
+
+        /* Layout: Tiled Content */
+        .tiled-content {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .tile {
+            background-color: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 35px 25px;
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .tile h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #1e40af;
+        }
+
+        .tile p {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .tile .icon {
+            font-size: 50px;
+            color: #f59e0b;
+            margin-bottom: 25px;
+            background: #fffbeb;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Layout: Styled Bullet Points */
+        .bullet-list {
+            width: 100%;
+        }
+        
+        .bullet-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-inline-start: 55px; /* מרווח לאייקון בעברית */
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .bullet-list i {
+            position: absolute;
+            right: 0;
+            top: 6px;
+            color: #2563eb;
+            font-size: 28px;
+        }
+
+        .bullet-list li strong {
+            color: #1e40af;
+            font-size: 26px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        /* Layout: Table */
+        .table-layout table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-layout th, .table-layout td {
+            border: 1px solid #cbd5e1;
+            padding: 25px;
+            text-align: center;
+            font-size: 26px;
+        }
+
+        .table-layout th {
+            background-color: #eff6ff;
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+
+        .table-layout tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .table-layout .total-row th,
+        .table-layout .total-row td {
+            background-color: #e2e8f0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- שקף 1: שער (Title Slide) -->
+    <div class="slide-container" id="slide1">
+        <div class="title-layout">
+            <h1>מבוא להסתברות</h1>
+            <p class="subtitle">מושגי יסוד, חישובים וכלים שימושיים (טבלאות ועצים)</p>
+        </div>
+    </div>
+
+    <!-- שקף 2: מרחב המדגם והמאורע (Image Right Text Left) -->
+    <div class="slide-container" id="slide2">
+        <h2 class="slide-title">מרחב המדגם והמאורע</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <div class="bullet-list">
+                        <ul>
+                            <li>
+                                <strong>מרחב המדגם:</strong><br>
+                                אוסף כל התוצאות האפשריות של ניסוי מסוים. מסומן באות היוונית אומגה: 
+                                <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x3A9;</mi></math></div>.
+                                <br><span style="font-size: 20px; color:#64748b;">דוגמה: בהטלת קובייה הוגנת, מרחב המדגם הוא כל המספרים האפשריים: {1, 2, 3, 4, 5, 6}.</span>
+                            </li>
+                            <li style="margin-top: 40px;">
+                                <strong>מאורע:</strong><br>
+                                קבוצה חלקית מתוך מרחב המדגם (תוצאה אחת או יותר שאנו מעוניינים לבדוק). מסומן לרוב באותיות אנגליות גדולות (C ,B ,A).
+                                <br><span style="font-size: 20px; color:#64748b;">דוגמה: המאורע A יכול להיות "התקבל מספר זוגי", כלומר {2, 4, 6}.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <!-- תמונה של קוביות שהובאה דרך הפונקציה -->
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1518133835878-5a93cc3f89e5?auto=format&fit=crop&w=800&q=80" alt="Rolling red dice on solid background">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 3: הסתברות של מאורע (Rounded Image and Text) -->
+    <div class="slide-container" id="slide3">
+        <h2 class="slide-title">הסתברות של מאורע</h2>
+        <div class="content-area">
+            <div class="two-column rounded-image-layout">
+                <div>
+                    <p><strong>מהי הסתברות?</strong> מדד מספרי (P) המייצג את הסיכוי שמאורע מסוים יתרחש.</p>
+                    <ul style="font-size: 22px; padding-inline-start: 25px;">
+                        <li>ההסתברות היא תמיד מספר בין 0 ל-1:
+                            <div class="math-block">
+                                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                    <mn>0</mn><mo>&#x2264;</mo><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>&#x2264;</mo><mn>1</mn>
+                                </math>
+                            </div>
+                        </li>
+                        <li><strong>מאורע ודאי:</strong> 
+                            <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>&#x3A9;</mi><mo>)</mo><mo>=</mo><mn>1</mn></math></div>
+                        </li>
+                        <li><strong>מאורע בלתי אפשרי:</strong> 
+                            <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>&#x2205;</mi><mo>)</mo><mo>=</mo><mn>0</mn></math></div>
+                        </li>
+                        <li><strong>חישוב בסיסי:</strong>
+                            <div class="math-block" style="font-size: 26px;">
+                                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                    <mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>=</mo>
+                                    <mfrac>
+                                        <mtext>מספר התוצאות הרצויות</mtext>
+                                        <mtext>סך כל התוצאות האפשריות</mtext>
+                                    </mfrac>
+                                </math>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <!-- תמונה של הטלת מטבע -->
+                    <div class="image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1593005510509-d05b264f1c9c?auto=format&fit=crop&w=800&q=80" alt="Silver coin flipping mid air">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 4: פעולות בין מאורעות (Tiled Text with Icons) -->
+    <div class="slide-container" id="slide4">
+        <h2 class="slide-title">פעולות בין מאורעות</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-circle-half-stroke"></i></div>
+                    <h3>מאורע משלים</h3>
+                    <p>המאורע שבו A <strong>לא</strong> מתרחש.</p>
+                    <div class="math-block" style="font-size: 24px; border:none; background:transparent;">
+                        <math xmlns="http://www.w3.org/1998/Math/MathML">
+                            <mi>P</mi><mo>(</mo><mover><mi>A</mi><mo>&#xAF;</mo></mover><mo>)</mo><mo>=</mo><mn>1</mn><mo>-</mo><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo>
+                        </math>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-link"></i></div>
+                    <h3>חיתוך ("גם וגם")</h3>
+                    <p>המאורע שבו גם A וגם B מתרחשים בו-זמנית.</p>
+                    <div class="math-block" style="font-size: 28px; border:none; background:transparent;">
+                        <math xmlns="http://www.w3.org/1998/Math/MathML">
+                            <mi>A</mi><mo>&#x2229;</mo><mi>B</mi>
+                        </math>
+                    </div>
+                </div>
+
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-object-group"></i></div>
+                    <h3>איחוד ("או")</h3>
+                    <p>מתרחש לפחות אחד מהמאורעות (או A, או B, או שניהם).</p>
+                    <div class="math-block" style="font-size: 22px; border:none; background:transparent;">
+                        <math xmlns="http://www.w3.org/1998/Math/MathML">
+                            <mi>P</mi><mo>(</mo><mi>A</mi><mo>&#x222A;</mo><mi>B</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>+</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>-</mo><mi>P</mi><mo>(</mo><mi>A</mi><mo>&#x2229;</mo><mi>B</mi><mo>)</mo>
+                        </math>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 5: מבוא לטבלה דו-מימדית (Table Layout) -->
+    <div class="slide-container" id="slide5">
+        <h2 class="slide-title">מבוא לטבלה דו-מימדית</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 25px;">נשתמש בטבלה כאשר אנו רוצים לבחון את הקשר בין <strong>שני מאורעות שונים</strong> ולחשב הסתברויות של חיתוכים ביניהם (למשל: תלמידים לפי מגדר ולפי חוג). התאים הפנימיים מייצגים את ה"גם וגם" (חיתוך).</p>
+            
+            <div class="table-layout">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>מאורע <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>B</mi></math></div></th>
+                            <th>משלים <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mover><mi>B</mi><mo>&#xAF;</mo></mover></math></div></th>
+                            <th>סך הכל (שוליים)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>מאורע <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>A</mi></math></div></th>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>A</mi><mo>&#x2229;</mo><mi>B</mi><mo>)</mo></math></div></td>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>A</mi><mo>&#x2229;</mo><mover><mi>B</mi><mo>&#xAF;</mo></mover><mo>)</mo></math></div></td>
+                            <td style="background-color: #f1f5f9; font-weight:bold;"><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo></math></div></td>
+                        </tr>
+                        <tr>
+                            <th>משלים <div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mover><mi>A</mi><mo>&#xAF;</mo></mover></math></div></th>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mover><mi>A</mi><mo>&#xAF;</mo></mover><mo>&#x2229;</mo><mi>B</mi><mo>)</mo></math></div></td>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mover><mi>A</mi><mo>&#xAF;</mo></mover><mo>&#x2229;</mo><mover><mi>B</mi><mo>&#xAF;</mo></mover><mo>)</mo></math></div></td>
+                            <td style="background-color: #f1f5f9; font-weight:bold;"><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mover><mi>A</mi><mo>&#xAF;</mo></mover><mo>)</mo></math></div></td>
+                        </tr>
+                        <tr class="total-row">
+                            <th>סך הכל (שוליים)</th>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo></math></div></td>
+                            <td><div class="math-inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi><mo>(</mo><mover><mi>B</mi><mo>&#xAF;</mo></mover><mo>)</mo></math></div></td>
+                            <td style="color: #2563eb; font-size: 32px;">1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 6: מבוא לעץ הסתברות (Image Right Text Left) -->
+    <div class="slide-container" id="slide6">
+        <h2 class="slide-title">מבוא לעץ הסתברות</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <div class="bullet-list">
+                        <ul>
+                            <li>
+                                <strong>מתי נשתמש?</strong><br>
+                                כאשר הניסוי מורכב מ<strong>מספר שלבים רצופים</strong> (למשל: הוצאת כדור מכד, ואז הוצאת כדור נוסף).
+                            </li>
+                            <li>
+                                <strong>איך בונים?</strong><br>
+                                מכל צומת (נקודת החלטה) יוצאים ענפים לכל האפשרויות. סכום ההסתברויות על הענפים היוצאים מאותה נקודה הוא תמיד 1.
+                            </li>
+                            <li>
+                                <strong>כלל הכפל ("לאורך המסלול"):</strong><br>
+                                כדי לחשב הסתברות של סדרת אירועים (מסלול שלם מההתחלה ועד הקצה), <strong>מכפילים</strong> את ההסתברויות שעל הענפים.
+                            </li>
+                            <li>
+                                <strong>כלל החיבור ("בין מסלולים"):</strong><br>
+                                אם יש כמה מסלולים שונים שמובילים לתוצאה, <strong>מחברים</strong> את ההסתברויות של המסלולים הרלוונטיים.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <!-- תמונה אבסטרקטית של עץ החלטות -->
+                    <div class="image-wrapper" style="box-shadow: none;">
+                        <img src="https://images.unsplash.com/photo-1503694978374-8a2fa686963a?auto=format&fit=crop&w=800&q=80" alt="Abstract decision tree representation">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 7: סיכום וטיפים לפתרון (Styled Bullet Points) -->
+    <div class="slide-container" id="slide7">
+        <h2 class="slide-title">סיכום וטיפים לפתרון</h2>
+        <div class="content-area">
+            <p style="font-size: 26px; text-align: center; margin-bottom: 40px;">ההסתברות מאפשרת לנו לכמת חוסר ודאות בצורה מדויקת.<br><strong>הסוד להצלחה הוא קריאה נכונה של הנתונים:</strong></p>
+            
+            <div class="bullet-list" style="max-width: 900px; margin: 0 auto;">
+                <ul>
+                    <li>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <strong>חפשו את מילות המפתח:</strong><br>
+                        המילה <strong>"או"</strong> מסמלת פעולת <strong>איחוד</strong> (לרוב פעולת חיבור).<br>
+                        המילה <strong>"וגם"</strong> מסמלת <strong>חיתוך</strong> (כפל בעץ, או תא פנימי בטבלה).
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-table"></i>
+                        <strong>מתי לבחור בטבלה?</strong><br>
+                        טבלה דו-מימדית מעולה לניסוי המבוצע בשלב אחד, אך בוחן שני משתנים/מאפיינים במקביל (למשל: בן/בת, מעשן/לא מעשן).
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-code-branch"></i>
+                        <strong>מתי לבחור בעץ?</strong><br>
+                        עץ הסתברויות הוא הכלי המושלם לניסויים בעלי מספר שלבים עוקבים (פעולה אחר פעולה), עם או בלי החזרה.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- שקף 8: מקורות להרחבה והעמקה -->
+    <div class="slide-container" id="slide8">
+        <h2 class="slide-title">מקורות להעמקה והרחבה</h2>
+        <div class="content-area">
+            <p style="margin-bottom: 25px;">להלן מספר מקורות מומלצים לתרגול נוסף והבנה מעמיקה של יסודות ההסתברות:</p>
+            
+            <div class="bullet-list">
+                <ul>
+                    <li>
+                        <i class="fa-solid fa-book"></i>
+                        <strong>ספרות אקדמית וספרי לימוד:</strong><br>
+                        "מבוא להסתברות וסטטיסטיקה חלק א'" / האוניברסיטה הפתוחה (תלמה לויתן, אלונה רביב).<br>
+                        ספרי מתמטיקה לבגרות (4 ו-5 יחידות לימוד) - פרקי ההסתברות של בני גורן, יואל גבע, או אדית ומריאן.
+                    </li>
+                    <li style="margin-top: 30px;">
+                        <i class="fa-solid fa-globe"></i>
+                        <strong>אתרי אינטרנט לתרגול ולמידה:</strong><br>
+                        <strong>אתר מלומד / Gool / MyGeva:</strong> מציעים פתרונות וידאו מפורטים לתרגילי הסתברות מבחינות בגרות.<br>
+                        <strong>Khan Academy (בעברית או באנגלית):</strong> קורס חינמי מעולה בנושא "הסתברות וסטטיסטיקה" (Probability and Statistics), הכולל הסברים ויזואליים מעולים על עצים וטבלאות.
+                    </li>
+                    <li style="margin-top: 30px;">
+                        <i class="fa-solid fa-video"></i>
+                        <strong>סרטוני הדרכה (YouTube):</strong><br>
+                        חפשו את ערוצי "הטכניון - מכינה" או שיעורים מוקלטים של מורים למתמטיקה המחפשים מונחים כמו "טבלה דו מימדית הסתברות" או "עץ הסתברויות".
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
